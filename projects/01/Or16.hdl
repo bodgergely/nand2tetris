@@ -14,4 +14,9 @@ CHIP Or16 {
 
     PARTS:
     // Put your code here:
+    Not16(in=a, out=nota);   
+    Not16(in=b, out=notb); 
+    And16(a=nota,b=notb,out=notaband);
+    Not16(in=notaband, out=out); 
+
 }
