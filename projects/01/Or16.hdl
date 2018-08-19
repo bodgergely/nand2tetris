@@ -18,5 +18,4 @@ CHIP Or16 {
     Not16(in=b, out=notb); 
     And16(a=nota,b=notb,out=notaband);
     Not16(in=notaband, out=out); 
-
 }
