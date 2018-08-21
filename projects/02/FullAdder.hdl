@@ -5,6 +5,18 @@
 
 /**
  * Computes the sum of three bits.
+
+                a   b   c   sum   carry
+                -----------------------
+                0   0   0    0      0
+                0   1   0    1      0
+                1   0   0    1      0
+                1   1   0    0      1
+                
+                0   0   1    1      0
+                0   1   1    0      1
+                1   0   1    0      1
+                1   1   1    1      1  
  */
 
 CHIP FullAdder {
@@ -14,4 +26,9 @@ CHIP FullAdder {
 
     PARTS:
     // Put you code here:
+    HalfAdder(a=a,b=b,sum=s1,carry=c1);
+    HalfAdder(a=s1,b=c,sum=sum, carry=c2);
+    HalfAdder(a=c1,b=c2,sum=carry,carry=t);
+
+    
 }
