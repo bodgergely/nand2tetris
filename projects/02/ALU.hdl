@@ -26,6 +26,34 @@
 // if (out == 0) set zr = 1
 // if (out < 0) set ng = 1
 
+// out[16] = fi(x[16], y[16], ctrl[6]), where x and y are 16 bit inputs, out is 16 bit output and fi is a aritmetic or logical function
+// selected from a fixed set of 18 possible functions.
+// ctrl consists 6 control bits. We use them to instruct the
+// ALU which function to compute. Potentially 2^6 = 64 functions could
+// be computed. Each control bit instructs the ALU to carry out
+// a certain elementary operation. Taken together - the combined
+// effects of these operations cause the CPU to compute a variety
+// of useful functions.
+// Out  of the possible 64 (6 ctrl bits) we will only implement 18 operations.
+// Each function has a specific control code of the 6 bits.
+
+// Or(x,y) = Not( And( Not(x), Not(y) ) );
+
+// 10110110  not->  01001001
+// 11010011  not->  00101100 &
+//                  --------
+//                  00001000 !
+//                    --------
+// 11110111         11110111
+
+// y+1
+// 10110101  zero   00000000   not  11111111
+// 00110111  not                    11001000 +
+//                                  11000111 not
+//                                  00111000
+
+// How to build a circuit that zeros the 16 bit input?
+
 CHIP ALU {
     IN  
         x[16], y[16],  // 16-bit inputs        
@@ -42,5 +70,49 @@ CHIP ALU {
         ng; // 1 if (out < 0),  0 otherwise
 
     PARTS:
-   // Put you code here:
+    // Put you code here:
+    // calc x
+    Xor16(a=x,b=x,out=zerox);
+    Mux16(a=x,b=zerox,sel=zx,out=is_x_zero);
+    Not16(in=is_x_zero, out=notx);
+    Mux16(a=is_x_zero, b=notx, sel=nx, out=result_x);
+
+    // calc y
+    Xor16(a=y,b=y,out=zeroy);
+    Mux16(a=y,b=zeroy,sel=zy,out=is_y_zero);
+    Not16(in=is_y_zero, out=noty);
+    Mux16(a=is_y_zero, b=noty, sel=ny, out=result_y);
+
+    // calc the function
+    Add16(a=result_x, b=result_y, out=addxy);
+    And16(a=result_x,b=result_y, out=andxy);
+    Mux16(a=andxy, b=addxy, sel=f, out=f_xy);
+
+    // calc the f,inal
+    Not16(in=f_xy, out=not_f);
+    Mux16(a=f_xy, b=not_f, sel=no, no=final);
+
+    // calculate whether out is zero
+    Or8Way(in=final[0..7], out=or8way_half0);
+    Or8Way(in=final[8..15], out=or8way_half1);
+    Or(a=or8way_half0, b=or8way_half1, out=or8way);
+    Not(in=or8way, out=zr);
+
+    // calculate whether output is negative
+    And(a=final[15], b=final[15], out=ng);
+
+    
 }
+
+
+
+
+
+
+
+
+
+
+
+
+
