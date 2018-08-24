@@ -73,33 +73,33 @@ CHIP ALU {
     // Put you code here:
     // calc x
     Xor16(a=x,b=x,out=zerox);
-    Mux16(a=x,b=zerox,sel=zx,out=is_x_zero);
-    Not16(in=is_x_zero, out=notx);
-    Mux16(a=is_x_zero, b=notx, sel=nx, out=result_x);
+    Mux16(a=x,b=zerox,sel=zx,out=isXZero);
+    Not16(in=isXZero, out=notx);
+    Mux16(a=isXZero, b=notx, sel=nx, out=resultX);
 
     // calc y
     Xor16(a=y,b=y,out=zeroy);
-    Mux16(a=y,b=zeroy,sel=zy,out=is_y_zero);
-    Not16(in=is_y_zero, out=noty);
-    Mux16(a=is_y_zero, b=noty, sel=ny, out=result_y);
+    Mux16(a=y,b=zeroy,sel=zy,out=isYZero);
+    Not16(in=isYZero, out=noty);
+    Mux16(a=isYZero, b=noty, sel=ny, out=resultY);
 
     // calc the function
-    Add16(a=result_x, b=result_y, out=addxy);
-    And16(a=result_x,b=result_y, out=andxy);
-    Mux16(a=andxy, b=addxy, sel=f, out=f_xy);
+    Add16(a=resultX, b=resultY, out=addxy);
+    And16(a=resultX,b=resultY, out=andxy);
+    Mux16(a=andxy, b=addxy, sel=f, out=funcXY);
 
     // calc the f,inal
-    Not16(in=f_xy, out=not_f);
-    Mux16(a=f_xy, b=not_f, sel=no, no=final);
+    Not16(in=funcXY, out=notFunc);
+    Mux16(a=funcXY, b=notFunc, sel=no, out=final);
+    And16(a=final, b=final, out=out);
 
     // calculate whether out is zero
-    Or8Way(in=final[0..7], out=or8way_half0);
-    Or8Way(in=final[8..15], out=or8way_half1);
-    Or(a=or8way_half0, b=or8way_half1, out=or8way);
-    Not(in=or8way, out=zr);
+    Or16Way(in=final, out=or16way);
+    Not(in=or16way, out=zr);
 
     // calculate whether output is negative
-    And(a=final[15], b=final[15], out=ng);
+    And16(a=final, b=final, out[15]=ng);
+
 
     
 }
