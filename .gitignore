@@ -2,3 +2,4 @@
 **/*.swp
 **/*.swo
 projects/**/*.out
+tools/bin/Hardware Simulator.dat
