@@ -17,4 +17,15 @@ CHIP PC {
 
     PARTS:
     // Put your code here:
+    // set up the possible outputs
+    Xor16(a=in,b=in,out=zero);
+    Not16(in=zero,out[0]=one);
+    Inc16(in=prev, out=incr);
+
+    // choose based on the flags from the outputs
+    Mux16(a=prev,b=incr,sel=inc, out=stage1);
+    Mux16(a=stage1,b=in,sel=load, out=stage2);
+    Mux16(a=stage2,b=zero,sel=reset, out=stage3);
+    Register(in=stage3, load=one, out=prev);
+    Register(in=stage3, load=one, out=out);
 }
