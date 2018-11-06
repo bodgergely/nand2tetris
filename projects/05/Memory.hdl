@@ -22,10 +22,43 @@
  * Screen and Keyboard chip specifications given in the book.
  */
 
+// RAM16K(in[16]= ,load= ,address[14]= ,out[16]= );
+// Screen(in[16]= ,load= ,address[13]= ,out[16]= ); 
+// Keyboard(out[16]= );
+
+
 CHIP Memory {
     IN in[16], load, address[15];
     OUT out[16];
 
     PARTS:
     // Put your code here:
+    // determining the where address belong:
+    // main 16K memory: only the firs 14 bits are set (13..0 bits), 14th bit is not set, set loadScreen to zero
+    // screen: the 14th bit is set -> route the bits 12..0 to screen chip, set loadMain to zero
+    // keyboard: 14th and 13bit are both set and 12..0 not set -> loadMain and loadScreen should be zero
+
+    // To be keyboard you need 14th and 13th set
+    And(a=address[14],b=address[13], out=isKeyboard);
+   
+    // try to see if we are screen or not - 14th has to be 1 and 13th has to be zero
+    Or(a=address[14], b=address[14], out=isMaybeScreen);
+    And(a=address[13],b=address[13], out=foo);
+    Not(in=foo, out=nfoo);
+    And(a=isMaybeScreen, b=nfoo, out=isScreen);
+
+    // is it main?
+    Or(a=isKeyboard, b=isScreen, out=lala);
+    Not(in=lala, out=isMain);
+
+    And(a=isMain, b=load, out=loadMain);        // if not main do not even try to load
+    And(a=isScreen, b=load, out=loadScreen);    // if not screen do not try to load
+
+    RAM16K(in=in,load=loadMain, address=address[0..13], out=outMain);
+    Screen(in=in,load=loadScreen,address=address[0..12],out=outScreen);
+    Keyboard(out=outKeyboard);
+
+    // decide which of the 3 outputs to designate as the final out
+    Mux16(a=outScreen, b=outMain, sel=isMain, out=stage1);
+    Mux16(a=stage1, b=outKeyboard, sel=isKeyboard, out=out);
 }
