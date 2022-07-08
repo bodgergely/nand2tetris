@@ -1,0 +1,10 @@
+TOOLS="$PWD/tools"
+function hardsim() {
+    $TOOLS/HardwareSimulator.bat $@
+}
+function assembler() {
+    $TOOLS/Assembler.bat $@
+}
+function cpuemu() {
+    $TOOLS/CPUEmulator.bat $@
+}
