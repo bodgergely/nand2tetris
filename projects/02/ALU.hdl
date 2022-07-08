@@ -88,7 +88,7 @@ CHIP ALU {
     And16(a=resultX,b=resultY, out=andxy);
     Mux16(a=andxy, b=addxy, sel=f, out=funcXY);
 
-    // calc the f,inal
+    // calc the final
     Not16(in=funcXY, out=notFunc);
     Mux16(a=funcXY, b=notFunc, sel=no, out=final);
     And16(a=final, b=final, out=out);
