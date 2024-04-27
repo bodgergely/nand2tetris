@@ -64,11 +64,25 @@ CHIP CPU {
 
     PARTS:
     // Put your code here:
+	
+	// CPU consists of:
+	//	- ALU.hdl
+	//	- 3 registers:
+	//		- D, A, PC
+	
+	// D register: can only store data values
+	// A register: can be interpreted 3 different ways -> (data value or RAM address or ROM address) - depending on instruction context
+	
+	// Instruction types (2 types, both 16 bit long)
+	//	- "A" (address) instruction (0vvvvvvvvvvvvvvv)
+	//		- load the 15 bit constant(vv..v) into the "A" register
+	//	- "C" (compute) instruction (111accccccdddjjj)
+	//		- 'a' and 'c' bits -> which function to compute, 'd' bits -> where to store result, 'j' bits -> optional jump
     
     // Decode the instruction
     And(a=instruction[15],b=instruction[15], out=instrType); // see if the 15th bit is zero (A instr) or one (C instr)
     Not(in=instrType, out=isAInstruction);
-    ARegister(in=instruction,load=isAInstruction, out=aregister); 
+    ARegister(in=instruction,load=isAInstruction, out=aregister);
 
      
 
