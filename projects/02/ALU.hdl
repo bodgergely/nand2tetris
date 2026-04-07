@@ -93,7 +93,7 @@ CHIP ALU {
     Mux16(a=funcXY, b=notFunc, sel=no, out=final);
     And16(a=final, b=final, out=out);
 
-    // calculate whether out is zero
+    // calculate the Zero Flag (whether out is zero)
     // We can't use Or16Way because it isn't a builtin chip.
     // Also internal pins and output pins can't be indexed or subscripted so we need to manually calculate...
     //   Or16Way(in=final, out=or16way);
@@ -132,7 +132,7 @@ CHIP ALU {
     Or(a=or14, b=out15, out=zrRev);
     Not(in=zrRev, out=zr);
     
-    // calculate whether output is negative
+    // calculate the Negative Flag (whether out is negative)
     And16(a=final, b=final, out[15]=ng);
 }
 
